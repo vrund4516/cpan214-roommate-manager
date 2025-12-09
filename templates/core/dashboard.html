@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Your Households</h2>
+
+{% if households %}
+    <ul class="list-group mb-3">
+        {% for h in households %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ h.name }}</span>
+                <a href="{% url 'household_detail' h.pk %}" class="btn btn-sm btn-primary">Open</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You are not in any household yet.</p>
+{% endif %}
+
+<a href="{% url 'household_create' %}" class="btn btn-success">Create New Household</a>
+{% endblock %}

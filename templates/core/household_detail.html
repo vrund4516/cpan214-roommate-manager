@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ household.name }}{% endblock %}
+
+{% block content %}
+<h2>{{ household.name }}</h2>
+<p>{{ household.address }}</p>
+
+<hr>
+
+<h4>Members &amp; Balances</h4>
+{% if balances %}
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Total Paid</th>
+            <th>Total Share</th>
+            <th>Balance (Paid - Share)</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in balances %}
+        <tr>
+            <td>{{ item.membership.user.username }}</td>
+            <td>{{ item.paid_total }}</td>
+            <td>{{ item.share_total }}</td>
+            <td>
+                {% if item.balance > 0 %}
+                    +{{ item.balance }} (others owe)
+                {% elif item.balance < 0 %}
+                    {{ item.balance }} (owes others)
+                {% else %}
+                    0
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>No members data.</p>
+{% endif %}
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center">
+    <h4>Expenses</h4>
+    <a href="{% url 'expense_create' household.pk %}" class="btn btn-sm btn-success">Add Expense</a>
+</div>
+{% if expenses %}
+    <ul class="list-group mb-3">
+    {% for e in expenses %}
+        <li class="list-group-item">
+            <strong>{{ e.title }}</strong> – {{ e.amount }} on {{ e.date }}<br>
+            Paid by: {{ e.paid_by.user.username }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No expenses yet.</p>
+{% endif %}
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center">
+    <h4>Chores</h4>
+    <a href="{% url 'chore_create' household.pk %}" class="btn btn-sm btn-success">Add Chore</a>
+</div>
+{% if chores %}
+    <ul class="list-group">
+    {% for c in chores %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ c.title }}</strong><br>
+                Due: {{ c.due_date }} –
+                Assigned to:
+                {% if c.assigned_to %}
+                    {{ c.assigned_to.user.username }}
+                {% else %}
+                    (no one)
+                {% endif %}
+                – Status: {{ c.status }}
+            </div>
+            <a href="{% url 'chore_toggle_status' c.pk %}" class="btn btn-sm btn-outline-primary">
+                Toggle Status
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No chores yet.</p>
+{% endif %}
+{% endblock %}
